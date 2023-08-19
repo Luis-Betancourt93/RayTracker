@@ -1,114 +1,110 @@
 export default class KanbanAPI {
-  static getItem(columnId) {
-    const column = read().find(column => column.id == columnId)
+  static getItems(columnId) {
+      const column = read().find(column => column.id == columnId)
 
-    if(!column) {
-      return []
-    }
+      if(!column) {
+          return []
+      }
 
-    return column.items
+      return column.items
   }
 
   static insertItem(columnId, content) {
-    const data = read()
-    const column = data.find(column => column.id == columnId)
-    const item = {
-        id: Math.floor(Math.random() * 10000),
-        content
-    }
+      const data = read()
+      const column = data.find(column => column.id == columnId)
+      const item = {
+          id: Math.floor(Math.random() * 100000),
+          content,
+      }
 
-    if(!column) {
-      throw new Error('Column does not exist')
-    }
+      if(!column) {
+          throw new Error("Column does not exist")
+      }
 
-    column.items.push(item) 
-    save(data)
+      column.items.push(item)
+      save(data)
 
-    return item
+      return item
   }
 
   static updateItem(itemId, newProps) {
-    const data = read()
-    const [item, currentColumn] = (() => {
-      for(const column of data){
-        const item = column.items.find(item => item.id == itemId)
+      const data = read()
+      const [item, currentColumn] = (() => {
+          for (const column of data) {
+              const item = column.items.find(item => item.id == itemId)
 
-        if(item) {
-          return [item, column]
-        }
-      }
-    })()
+              if(item) {
+                  return [item, column]
+              }
+          }
+      })()
 
-    if(!item) {
-      throw new Error('Item not found')
-    }
-
-    item.content = newProps.content === undefined ? item.content : newProps.content
-
-    if(
-      newProps.columnId !== undefined
-      && newProps.position !== undefined
-    ) {
-      const targetColumn = data.find(column => column.id == newProps.columnId)
-
-      if(!targetColumn) {
-        throw new Error('Target column not found')
+      if(!item) {
+          throw new Error("Item not found")
       }
 
-      currentColumn.items.splice(currentColumn.items.indexOf(items), 1)
+      item.content = newProps.content === undefined ? item.content : newProps.content
 
-      targetColumn.items.splice(newProps.position, 0, item)
+      if(
+          newProps.columnId !== undefined
+          && newProps.position !== undefined
+      ) {
+          const targetColumn = data.find(column => column.id == newProps.columnId)
 
-    }
+          if(!targetColumn) {
+              throw new Error("Target column not found")
+          }
 
-    save(data)
+          currentColumn.items.splice(currentColumn.items.indexOf(item),1)
 
+          targetColumn.items.splice(newProps.position,0,item)
+      }
 
+      save(data)
   }
-
 
   static deleteItem(itemId) {
-    const data = read()
+      const data = read()
 
-    for(const column of data) {
-      const item = column.items.find(item => item.id == itemId)
+      for (const column of data) {
+          const item = column.items.find(item => item.id == itemId)
 
-      if(item) {
-        column.items.splice(column.items.indexOf(item), 1)
+          if(item) {
+              column.items.splice(column.items.indexOf(item),1)
+          }
       }
-    }
-    save(data)
+
+      save(data)
   }
-  
 }
 
 function read() {
-  const json = localStorage.getItem('Kanban-data') 
+  const json = localStorage.getItem("kanban-data")
 
   if(!json) {
-    return [
-      {
-        id: 1,
-        items: []
-      },
-      {
-        id: 2,
-        items: []
-      },
-      {
-        id: 3,
-        items: []
-      },
-      {
-        id: 4,
-        items: []
-      },
-    ]
+      return [
+          {
+              id: 1,
+              items: []
+          },
+          {
+              id: 2,
+              items: []
+          },
+          {
+              id: 3,
+              items: []
+          },
+          {
+              id: 4,
+              items: []
+          },
+      ]
   }
 
   return JSON.parse(json)
 }
 
-function save() {
-  localStorage.setItem('kanban-data', JSON.stringify(data))
+function save(data) {
+  localStorage.setItem("kanban-data", JSON.stringify(data))
 }

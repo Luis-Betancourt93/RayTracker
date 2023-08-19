@@ -1,44 +1,49 @@
 import KanbanAPI from "../api/KanbanAPI.js"
+import DropZone from "./DropZone.js";
+import Item from "./Item.js";
 
 export default class Column {
-  constructor(id, title){
-    this.elements = {}
-    this.elements.root = Column.createRoot()
-    this.elements.title = this.elements.root.querySelector('.Kanban__column-title')
-    this.elements.items = this.elements.root.querySelector('Kanban__column-items ')
-    this.elements.items = this.elements.root.querySelector('Kanban__add-item ')
+    constructor(id, title) {
 
-    this.elements.root.dataset.id = id
-    this.elements. tilte.textContent = title
+        const topDropZone = DropZone.createDropZone()
 
-    this.elements.addItem.addEventListener('click', () => {
-      const newItem = KanbanAPI
-      this.renderItem(newItem)
-    })
-  }
+        this.elements = {}
+        this.elements.root = Column.createRoot()
+        this.elements.title = this.elements.root.querySelector(".kanban__column-title")
+        this.elements.items = this.elements.root.querySelector(".kanban__column-items")
+        this.elements.addItem = this.elements.root.querySelector(".kanban__add-item")
 
-  static createRoot() {
-    const range = document.createRange()
+        this.elements.root.dataset.id = id
+        this.elements.title.textContent = title
 
-    range.selectNode(document.body)
+        this.elements.items.appendChild(topDropZone)
 
-    return range.createContextualFragment(`
-      <div class='Kanban__column'>
-        <div class='Kanban__column-title'></div>  
-        <div class='Kanban__column-items'></div>
-        <button class= 'Kanban__add-item'></button> +
-        Add</button>
-      </div>
+        this.elements.addItem.addEventListener("click", 
+        () => {
+            const newItem = KanbanAPI.insertItem(id, "")
+            this.renderItem(newItem)
+        }
+        )
+    }
 
-      `
-    ).children[0]
+    static createRoot() {
+        const range = document.createRange()
 
-  }
+        range.selectNode(document.body)
 
+        return range.createContextualFragment(`
+            <div class="kanban__column">
+                <div class="kanban__column-title"></div>
+                <div class="kanban__column-items"></div>
+                <button class="kanban__add-item" type="button">+ Add</button>
+            </div>
+            
+        `).children[0]
+    }
 
-  renderItem(data) {
-    const item = new Item(data.id, data.content)
-    this.elements.items.appendChild(item.elements.root)
-  }
-
+    renderItem(data) {
+        console.log(data.id, data.content)
+        const item = new Item(data.id, data.content)
+        this.elements.items.appendChild(item.elements.root)
+    }
 }
